@@ -25,7 +25,7 @@ end
 
 def download_artifact (new_resource)
 	# create relevant resources along the way
-	mkdir_p new_resource.dest unless ::File.exist? new_resource.dest
+	FileUtils.mkdir_p new_resource.dest unless ::File.exist? new_resource.dest
 	# derive the filename now
 	if !::File.file? new_resource.dest then
 		file_name = (Pathname(new_resource.dest) + new_resource.file_name).to_s
