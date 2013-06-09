@@ -27,7 +27,7 @@ def download_artifact (new_resource)
 	success = false
 	new_resource.repositories.each {|repository|
 		# resolve download url and fetch the content
-		artifact_url = resolve_version_url new_resource
+		artifact_url = resolve_version_url(new_resource, repository)
 		begin 
 			artifact_response = RestClient.get artifact_url
 		rescue => e
