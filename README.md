@@ -31,8 +31,20 @@ artifactory "artifact-id" do
 end
 ```
 
-If the destination path is a folder, then the artifact will be created as DEST_PATH/artifact_id.packaging.  
-If the destination path is an existing file, then the artifact will be created as DEST_PATH (overwrites it).
+* If the destination path is a folder, then the artifact will be created as DEST_PATH/artifact_id.packaging. For example:
+```ruby
+artifactory "artifact-id" do
+  group_id "groupid"
+  version "1.0.42"
+  classifier "sources" # optional, defaults to nil
+  packaging "war" # defaults to jar
+  dest "/var/lib/tomcat7/webapps"
+  action :put
+end
+```
+will create /var/lib/tomcat7/webapps/artifact-id.war
+
+* If the destination path is an existing file, then the artifact will be created as DEST_PATH (overwrites it).
 
 License and Authors
 -------------------
