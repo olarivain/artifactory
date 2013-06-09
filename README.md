@@ -1,6 +1,7 @@
 artifactory Cookbook
 ====================
-Downloads artifacts from artifactory.
+Downloads artifacts from Artifactory. It's usage is very similar to the maven cookbook provided by OpsCode.
+User provides artifact GAVC coordinates, the provider resolves them against Artifactory and eventually uses a remote file resource to fetch locally.
 
 Requirements
 ------------
@@ -8,40 +9,25 @@ None.
 
 Attributes
 ----------
-TODO: List you cookbook attributes here.
+See `attributes/default.rb` for default values.
 
-e.g.
-#### artifactory::default
-<table>
-  <tr>
-    <th>Key</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td><tt>['artifactory']['bacon']</tt></td>
-    <td>Boolean</td>
-    <td>whether to include bacon</td>
-    <td><tt>true</tt></td>
-  </tr>
-</table>
+* `default["artifactory"]["url"]` - the url to the artifactory server, e.g. http://artifactory.example.com:8081/artifactory. Required
+* `default["artifactory"]["repository"]` - repository to resolve artifacts from. Defaults to "internal". Currently only one repository is supported, more will be in a near future.
 
 Usage
 -----
-#### artifactory::default
-TODO: Write usage instructions for each cookbook.
+Make sure you override the artifactory url first.
+Also make sure the repository matches yours.
+Then:
 
-e.g.
-Just include `artifactory` in your node's `run_list`:
-
-```json
-{
-  "name":"my_node",
-  "run_list": [
-    "recipe[artifactory]"
-  ]
-}
+```ruby
+artifactory "artifact-id" do
+  group_id "groupid"
+  version theVersion
+  packaging "war" # defaults to jar
+  dest "file_path_destination"
+  action :put
+end
 ```
 
 License and Authors
