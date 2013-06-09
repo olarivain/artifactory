@@ -8,5 +8,3 @@
 #
 
 # nothing, see the providers section
-
-include_recipe 'gem_package'
