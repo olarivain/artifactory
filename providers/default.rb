@@ -8,13 +8,7 @@
 #
 
 # make sure the rest_client gem is loaded
-r = gem_package "rest_client" do
-  action :nothing
-end
-r.run_action(:install)
 require 'rubygems'
-Gem.clear_paths
-
 require 'rest_client'
 
 # /api/search/gavc?g=org.acme&a=artifact&v=1.0&c=sources&repos=libs-release-local
