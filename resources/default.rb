@@ -28,7 +28,7 @@ def initialize(*args)
   # we can't use the node properties when initially specifying the resource
   @artifact_id ||= @name
   @repositories ||= node[:artifactory][:repositories]
-  @url ||= node[:artifactory:][:url]
+  @url ||= node[:artifactory][:url]
   @action = :put
 end
 
