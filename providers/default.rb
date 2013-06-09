@@ -38,6 +38,7 @@ def download_artifact (new_resource)
 	artifact_url = resolve_version_url(new_resource)
 	download = remote_file file_name do
 		source artifact_url
+		mode 0644
 	end
 
 	# run the download and notifiy if updated
