@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of artifactory.
 
+## 0.2.0
+
+* Added support for version ranges in artifact resolution. Support is currently limited to maven artifacts, i.e. for artifacts whose folders holds a maven-data.xml file.
+
 ## 0.1.0:
 
 * Initial release of artifactory

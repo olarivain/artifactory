@@ -12,7 +12,7 @@ Attributes
 See `attributes/default.rb` for default values.
 
 * `default["artifactory"]["url"]` - the url to the artifactory server, e.g. http://artifactory.example.com:8081/artifactory. Required. The provider handles the presence or absence of a trailing slash gracefully.
-* `default["artifactory"]["repository"]` - repository to resolve artifacts from. Defaults to "internal". Required. Currently only one repository is supported, more will be in a near future.
+* `default["artifactory"]["repository"]` - repository to resolve artifacts from. Defaults to "internal".
 
 Usage
 -----
@@ -23,7 +23,7 @@ Then:
 ```ruby
 artifactory "artifact-id" do
   group_id "groupid"
-  version "1.0.42"
+  version "~> 1.0.0"
   classifier "sources" # optional, defaults to nil
   packaging "war" # defaults to jar
   dest "file_path_destination"
