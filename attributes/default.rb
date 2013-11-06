@@ -1,2 +1,2 @@
 default["artifactory"]["url"] = nil
-default["artifactory"]["repositories"] = ["internal"]
+default["artifactory"]["repository"] = ["internal"]

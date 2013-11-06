@@ -22,16 +22,19 @@ module Artifactory
 		end
 
 		def resolve_version
+			# if we're using pinned version, just return our current version
 			if !@version.is_version_range then
+				Chef::Log.info("Artifact #{@group_id}:#{@artifact_id}:#{@version.version} resolved to pinned #{@resolved_version}.")
 				@resolved_version = @version.version
 				return
 			end
+
 			# get the version list
 			all_versions = version_list
 
 			# build a version for our artifact so we can easily get the min/max
-			min_version = version.min_version
-			max_version = version.max_version
+			min_version = version.min_version_inclusive
+			max_version = version.max_version_exclusive
 
 			# then compare all elements in the sorted array until we get the latest that still matches
 		    all_versions.each do |candidate|
@@ -55,9 +58,9 @@ module Artifactory
 		    end
 
 		    if @resolved_version != nil then
-		    	Chef::Log.info("Artifact #{@group_id}:#{@artifact_id}:#{@version} resolved to #{@resolved_version}.")
+		    	Chef::Log.info("Artifact #{@group_id}:#{@artifact_id}:#{@version.version} resolved to #{@resolved_version}.")
 			else
-				Chef::Log.info("Could not resolve artifact #{@group_id}:#{@artifact_id}:#{@version} resolved to any version.")
+				Chef::Log.info("Could not resolve artifact #{@group_id}:#{@artifact_id}:#{@version.version} resolved to any version.")
 			end
 		end
 
@@ -98,7 +101,7 @@ module Artifactory
 				RestClient.proxy = ENV['http_proxy']
 		        response = RestClient.get metadata_url
 			rescue Exception => e
-				Chef::Log.info("Couldn't list versions for #{@group_id}:#{@artifact_id}:#{@version.version} from #{@repository}.\nAttempted url was #{metadata_url}")
+				Chef::Log.info("Couldn't list versions for #{@group_id}:#{@artifact_id}:#{@version.version} from #{@repository} from #{metadata_url}")
 				return
 			end
 
@@ -126,7 +129,7 @@ module Artifactory
 	end
 
 	class Version
-		attr_reader :versionComponents, :version
+		attr_reader :version, :versionComponents
     
 	    def initialize(version)
 	        @version = version
@@ -143,7 +146,7 @@ module Artifactory
 		  @version.strip.start_with? "~>"
 		end
 	    
-	    def min_version
+	    def min_version_inclusive
 	    	if !is_version_range then
 	    		return Artifactory::Version.new(@version)
 	    	end
@@ -152,26 +155,32 @@ module Artifactory
 	    	inclusive = minVersion.start_with? "="
 	    	minVersion = minVersion.strip.gsub("=", "").strip
 
+	    	# we're inclusive, so just return this version
 	    	if inclusive then
-	    		return minVersion
+	    		return Version.new(minVersion)
 	    	end
 
+	    	# otherwise bump the minor version
 	    	components = minVersion.split "."
+	    	raise "Version ranges require at least 2 version components" if components.length < 2
 	    	minorNumber = components.pop.to_i + 1
 	    	components << minorNumber.to_s
 
 	    	Version.new(components.join("."))
 	    end
 	    
-	    def max_version
+	    def max_version_exclusive
 	    	
 	    	maxVersion = @version.strip.gsub("~>", "")
 	    	maxVersion = maxVersion.strip.gsub("=", "").strip
 
-	    	components = maxVersion.split "." 
+	    	components = maxVersion.split "."
+	    	raise "Version ranges require at least 2 version components" if components.length < 2
+	    	# pop twice, bump the last popped 
 	    	components.pop
 	    	majorVersion = components.pop.to_i + 1
 	    	components << majorVersion.to_s
+	    	# and set the min to 0
 	    	components << "0"
 
 	    	Version.new(components.join("."))
@@ -182,7 +191,7 @@ module Artifactory
 	        otherVersionNumbers = other.versionComponents
 	        
 	        @versionComponents.each do |versionNumber|
-	            # pragma self is longer, we got her with an equality, that means the self is 
+	            # self is longer, we got here with an equality, that means the self is 
 	            # a later version, hence return 1
 	            if index >= otherVersionNumbers.length then
 	                return 1

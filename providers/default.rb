@@ -7,18 +7,13 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# make sure the rest_client gem is loaded
-require 'rubygems'
-
 include Artifactory
 
 def download_artifact (resource)
 	artifact = resource.artifact
 
-	#resolve the version and repo
-	if artifact.resolved_version == nil then
-		artifact.resolve_version
-	end
+	#resolve the version if needed
+	artifact.resolve_version if artifact.resolved_version == nil
 
 	# create relevant resources along the way
 	FileUtils.mkdir_p resource.dest unless ::File.exist? resource.dest
